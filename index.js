@@ -210,6 +210,22 @@ let actions = {
 
 let inventory = [];
 
+directions();
+
+async function directions() {
+    while (true) {
+        let input = await ask("Welcome to Zorkington!\nPress 1 to start the game, or press 2 for game directions\n");
+        if (input === "1") {
+            start();
+            break;
+        } else if (input === "2") {
+            console.log("Welcome to the game. The objective is to navigate through the different rooms and find a way out.\nTo move between rooms, use the 'go' command followed by the name of the room. For example, 'go library' will take you to the library room.\nNOTE, for rooms like piano room, you'll need to combine the two words together. Ex: 'go pianoroom'.\nTo take an item, use the 'take' or 'pickup' command followed by the name of the item. For example, 'take key' will pick up the key item.\nNOTE: there will be ONE item where you'll need to combine two words together, just like certain rooms in this game. Pay attention to the prompts.\nGood luck!");
+        } else {
+            console.log("Invalid input. Please enter 1 or 2.");
+        }
+    }
+}
+
 start();
 
 async function start() {
@@ -308,7 +324,7 @@ async function start() {
                         .join(", ")}.`
                 );
             }
-        } else if (action === "go") { //"go" is the action where you can enter a room, and I only want to use the "go" action if the player is in select rooms. 
+        } else if (action === "go") { //"go" is the action where you can enter a room, and for the following 4 rooms I only want to use the "go" action if the player is in select rooms. 
             const room = rooms[currentRoom.name];
             const destinationRoom = noun;
             if (
@@ -352,7 +368,7 @@ async function start() {
                 console.log(desk.description);
             } else if (noun === "piano" && currentRoom === roomMap.pianoroom) { //you can only "search piano" in the piano room
                 console.log(piano.description);
-            } else if (noun === "secretroom" && currentRoom === roomMap.secretroom) { //obviously, you can only "search secretroom"
+            } else if (noun === "secretroom" && currentRoom === roomMap.secretroom) { //obviously, you can only "search secretroom" in the secret room
                 console.log(
                     "Upon searching the room, you come across a flashlight."
                 );
@@ -361,7 +377,7 @@ async function start() {
             if (noun === "key" && currentRoom === roomMap.library) { //you can only "insert key" in the library
             console.log("The drawer opens, revealing a piece of paper with text written on it.");
             } else if (noun === "goldenkey" && currentRoom === roomMap.secretroom) { //doing this ends the game; you can only "insert goldenkey" if you are in the secretroom
-                console.log("The door opens and you escapes just in time!\nYou turn around to see the building explode behind you, realizing that you narrowly avoided a deadly trap.\nVictorious, you walk away with the golden key in hand, having successfully completed your Zork adventure.");
+                console.log("The door opens and you escapes just in time!\nYou turn around to see the building explode behind you, realizing that you narrowly avoided a deadly trap.\nVictorious, you walk away with the golden key in hand, having successfully completed your Zork adventure!\nTHANKS FOR PLAYING!!!!");
                 process.exit();
             }
         } else if (action === "kick" && noun === "wall" && currentRoom === roomMap.secretroom) { //"kick" action, and there is only one instance to use this action
