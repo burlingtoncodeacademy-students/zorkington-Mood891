@@ -220,9 +220,9 @@ async function start() {
         const action = input[0];
         const noun = input[1];
         if (actions.read.includes(action)) {  //"read" action
-            if (noun === "sign") {
+            if (noun === "sign" && currentRoom === roomMap.mainStreet) { //you can only "read sign" if you're on mainStreet
             console.log(sign.description);
-        } else if (noun === "message") {
+        } else if (noun === "message" && currentRoom === roomMap.computerroom) { //you can only "read message" in the computerroom
             console.log(message.description);
             let guess = await ask("Solve Riddle: ");
             if (guess === riddle) {
@@ -232,12 +232,12 @@ async function start() {
             }
         }
         } else if (action === "open") { //"open" action
-            if (noun === "door") {
+            if (noun === "door" && currentRoom === roomMap.mainStreet) { //you can only "open door" if you're on mainStreet
                 console.log("The door is locked. There is a keypad on the door handle.");
-            } else if (noun === "chest") {
+            } else if (noun === "chest" && currentRoom === roomMap.secretroom) { //you can only "open chest" if you are in the secret room
                 console.log(chest.description);
             }
-        } else if (action === "enter" && noun === "code") { //this is when you need to enter a code to get into the Foyer (normally i would have both enter's in one code block, but i wanted to add the extra await ask for this assignment)
+        } else if (action === "enter" && noun === "code" && currentRoom === roomMap.mainStreet) { //this is when you need to enter a code to get into the Foyer (normally i would have both enter's in one code block, but i wanted to add the extra await ask for this assignment), plus you can only do this in mainStreet
             let guess = await ask("Enter the code: ");
             if (guess === code) {
                 console.log(
@@ -248,7 +248,7 @@ async function start() {
             } else {
                 console.log("Bzzzzt! The door is still locked.");
             }
-        } else if (action === "enter" && noun === "password") { //this is for when you need to enter a password in the secret room
+        } else if (action === "enter" && noun === "password" && currentRoom === roomMap.secretroom) { //this is for when you need to enter a password in the secret room
             let guess = await ask("Enter the password: ");
             if (guess === password) {
                 console.log("Success! The door unlocks, revealing a treasure chest!\nNOTE: This chest is not locked.");
@@ -258,27 +258,29 @@ async function start() {
             if (item && item.takeable) {
                 if (inventory.includes(item)) { //if the player already has an item in their inventory, they can't pick it up again. Else the item will be pushed to their inventory
                     console.log(`You already have the ${item.name}.`);
+                } else if (!currentRoom.inv.includes(item)) { //this rule establishes that if you try to take an item that is not in the inventory of the appropriate room, then the message will be printed that you can't
+                    console.log(`You cannot pick up the ${item.name}.`)
                 } else {
                     inventory.push(item);
                     console.log(`You picked up the ${item.name}.`); //lets us know that an item has been added to our inventory
-                    if (item.name === "newspaper") {
+                    if (item.name === "newspaper" && currentRoom === roomMap.foyer) {
                         console.log(item.description);
-                    } else if (item.name === "map") {
+                    } else if (item.name === "map" && currentRoom === roomMap.foyer) {
                         console.log(item.description);
                         console.log(
                             "Which room would you like to go to?" 
                         );
-                    } else if (item.name === "note") {
+                    } else if (item.name === "note" && currentRoom === roomMap.library) { //you can only "take note" in the library
                         console.log(item.description);
-                    } else if (item.name === "key") {
+                    } else if (item.name === "key" && currentRoom === roomMap.pianoroom) { //you can only "take key" in the paino room
                         console.log(item.description);
-                    } else if (item.name === "paper") {
+                    } else if (item.name === "paper" && currentRoom === roomMap.library) { //you can only "take paper" in the library
                         console.log(item.description);
-                    } else if (item.name === "flashlight") {
+                    } else if (item.name === "flashlight" && currentRoom === roomMap.secretroom) { //you can only "take flashlight" in the secret room
                         console.log(item.description);
-                    } else if (item.name === "goldenkey") {
+                    } else if (item.name === "goldenkey" && currentRoom === roomMap.secretroom) { //you can only "take goldenkey" in the library
                         console.log(item.description);
-                    }
+                    } 
                 }
             } else if (item && !item.takeable) { //if the item is not takeable
                 console.log(
@@ -346,23 +348,23 @@ async function start() {
         } else if (action === "search") {//"search" action
             const room = rooms[currentRoom.name];
             const destinationRoom = noun;
-            if (noun === "desk") {
+            if (noun === "desk" && currentRoom === roomMap.library) { //you can only "search desk" in the library
                 console.log(desk.description);
-            } else if (noun === "piano") {
+            } else if (noun === "piano" && currentRoom === roomMap.pianoroom) { //you can only "search piano" in the piano room
                 console.log(piano.description);
-            } else if (noun === "secretroom") {
+            } else if (noun === "secretroom" && currentRoom === roomMap.secretroom) { //obviously, you can only "search secretroom"
                 console.log(
                     "Upon searching the room, you come across a flashlight."
                 );
             }
         } else if (action === "insert") { //"insert" action
-            if (noun === "key") {
+            if (noun === "key" && currentRoom === roomMap.library) { //you can only "insert key" in the library
             console.log("The drawer opens, revealing a piece of paper with text written on it.");
-            } else if (noun === "goldenkey") { //doing this ends the game
+            } else if (noun === "goldenkey" && currentRoom === roomMap.secretroom) { //doing this ends the game; you can only "insert goldenkey" if you are in the secretroom
                 console.log("The door opens and you escapes just in time!\nYou turn around to see the building explode behind you, realizing that you narrowly avoided a deadly trap.\nVictorious, you walk away with the golden key in hand, having successfully completed your Zork adventure.");
                 process.exit();
             }
-        } else if (action === "kick" && noun === "wall") { //"kick" action, and there is only one instance to use this action
+        } else if (action === "kick" && noun === "wall" && currentRoom === roomMap.secretroom) { //"kick" action, and there is only one instance to use this action
             console.log(wall.description);
         } else if (rooms[currentRoom.name].canChangeTo.includes(noun)) {
             currentRoom = roomMap[noun]; // make sure to grok this (Eli wrote this during 04/20 office hours live share)
