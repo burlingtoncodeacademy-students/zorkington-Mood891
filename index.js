@@ -46,7 +46,7 @@ const mainStreet = new Room(
 
 const foyer = new Room(
     "foyer",
-    "You are in a foyer. Or maybe it's an antechamber. Or a vestibule. Or an entryway. Or an atrium. Or a narthex. But let's forget all that fancy vocabulary, and just call it a foyer. Anyways, it's definitely not a mudroom. A copy of the local newspaper lies in a corner. NOTE: to pick up an item, use the take or pickup action action.",
+    "You are in a foyer. Or maybe it's an antechamber. Or a vestibule. Or an entryway. Or an atrium. Or a narthex. But let's forget all that fancy vocabulary, and just call it a foyer.Anyways, it's definitely not a mudroom.\nA copy of the local newspaper lies in a corner.\nNOTE: to pick up an item, use the take or pickup action.",
     ["local newspaper", "map"],
 );
 
@@ -58,7 +58,7 @@ const library = new Room(
 
 const pianoroom = new Room(
     "pianoroom",
-    "The Piano Room is a grand room with a beautiful piano in the center. There's also a portrait with a giant map of the city of Burlington hanging on the wall. But you notice something is off about the piano. Maybe you should search it....",
+    "The Piano Room is a grand room with a beautiful piano in the center. There's also a portrait with a giant map of the city of Burlington hanging on the wall.\nBut you notice something is off about the piano. Maybe you should search it....",
     ["piano", "key"],
 );
 
@@ -143,7 +143,7 @@ const paper = new Item(
 
 const message = new Item(
     "message",
-    "The message reads: To unlock the next room, solve the following riddle: What is always in front of you but can't be seen? HINT: the (6-lettered word)",
+    "The message reads: To unlock the next room, solve the following riddle: What is always in front of you but can't be seen?\nHINT: the (6-lettered word)",
     false
 );
 
@@ -168,7 +168,7 @@ const goldenkey = new Item(
 
 const wall = new Item(
     "wall",
-    "YES! You got out of the secret room, and you are back in the Foyer! But you quickly realize that the gas is starting to spread throughout the Foyer.\nYou try opening the same door that you came in at the start of your journey, but it's LOCKED!!!!!\nWhen you turn around, you notice a door on the far wall! Maybe that is your escape!\nYou try opening it, but it is locked! YOU NEED TO GET OUT FAST What can you do? NOTE: you only have three attempts to enter the correct action and item to escape!!",
+    "YES! You got out of the secret room, and you are back in the Foyer! But you quickly realize that the gas is starting to spread throughout the Foyer.\nYou try opening the same door that you came in at the start of your journey, but it's LOCKED!!!!!\nWhen you turn around, you notice a door on the far wall! Maybe that is your escape!\nYou try opening it, but it is locked! YOU NEED TO GET OUT FAST What can you do?",
     false
 );
 
@@ -274,12 +274,10 @@ async function start() {
             if (item && item.takeable) {
                 if (inventory.includes(item)) { //if the player already has an item in their inventory, they can't pick it up again. Else the item will be pushed to their inventory
                     console.log(`You already have the ${item.name}.`);
-                } else if (!currentRoom.inv.includes(item)) { //this rule establishes that if you try to take an item that is not in the inventory of the appropriate room, then the message will be printed that you can't
-                    console.log(`You cannot pick up the ${item.name}.`)
                 } else {
-                    inventory.push(item);
-                    console.log(`You picked up the ${item.name}.`); //lets us know that an item has been added to our inventory
+                    inventory.push(item); 
                     if (item.name === "newspaper" && currentRoom === roomMap.foyer) {
+                        console.log(`You picked up the ${item.name}.`);
                         console.log(item.description);
                     } else if (item.name === "map" && currentRoom === roomMap.foyer) {
                         console.log(item.description);
@@ -287,16 +285,21 @@ async function start() {
                             "Which room would you like to go to?" 
                         );
                     } else if (item.name === "note" && currentRoom === roomMap.library) { //you can only "take note" in the library
-                        console.log(item.description);
+                        console.log(`You picked up the ${item.name}.`);
+                        console.log(item.description); //lets us know that an item has been added to our inventory
                     } else if (item.name === "key" && currentRoom === roomMap.pianoroom) { //you can only "take key" in the paino room
+                        console.log(`You picked up the ${item.name}.`);
                         console.log(item.description);
                     } else if (item.name === "paper" && currentRoom === roomMap.library) { //you can only "take paper" in the library
+                        console.log(`You picked up the ${item.name}.`);
                         console.log(item.description);
                     } else if (item.name === "flashlight" && currentRoom === roomMap.secretroom) { //you can only "take flashlight" in the secret room
+                        console.log(`You picked up the ${item.name}.`);
                         console.log(item.description);
                     } else if (item.name === "goldenkey" && currentRoom === roomMap.secretroom) { //you can only "take goldenkey" in the library
+                        console.log(`You picked up the ${item.name}.`);
                         console.log(item.description);
-                    } 
+                    }
                 }
             } else if (item && !item.takeable) { //if the item is not takeable
                 console.log(
