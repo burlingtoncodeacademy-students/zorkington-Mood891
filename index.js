@@ -313,7 +313,7 @@ async function start() {
                 );
             }
         } else if (action === "go") {
-            //"go" is the action where you can enter a room, and I only want to use the "go" action if the player is in select rooms
+            //"go" is the action where you can enter a room, and I only want to use the "go" action if the player is in select rooms. 
             const room = rooms[currentRoom.name];
             const destinationRoom = noun;
             if (
@@ -341,9 +341,9 @@ async function start() {
                     console.log("You are already in the secret room.");
                     console.log(currentRoom.description);
                 } else if (
-                    noun === "secretroom" && currentRoom.name !== "secretroom"
+                    noun === "secretroom" && currentRoom.name === "computerroom"
                 ) {
-                    //I set it  the "secretroom" up this way so that when the player enters the secret room, if they try to go to another room, they can't
+                    //I set it so that the secretroom can only be accessed from the computer room
                     currentRoom = roomMap.secretroom;
                     console.log("You have entered the secret room.");
                     console.log(currentRoom.description);
