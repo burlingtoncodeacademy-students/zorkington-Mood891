@@ -35,7 +35,6 @@ class Room {
         this.name = name;
         this.description = description;
         this.inv = inv;
-        this.locked = locked;
     }
 }
 
@@ -43,45 +42,39 @@ const mainStreet = new Room(
     "mainStreet",
     "You are standing on Main Street between Church and South Winooski. There is a door here. A keypad sits on the handle. On the door is a handwritten sign.",
     [],
-    false
 );
 
 const foyer = new Room(
     "foyer",
     "You are in a foyer. Or maybe it's an antechamber. Or a vestibule. Or an entryway. Or an atrium. Or a narthex. But let's forget all that fancy vocabulary, and just call it a foyer. Anyways, it's definitely not a mudroom. A copy of the local newspaper lies in a corner. NOTE: to pick up an item, use the take or pickup action action.",
     ["local newspaper", "map"],
-    true
 );
 
 const library = new Room(
     "library",
     "There's a desk in the center of the room with a locked drawer, but you realize you don't have a key. But there are other shelves you can search in the desk.",
     ["desk", "book", "note"],
-    false
 );
 
 const pianoroom = new Room(
     "pianoroom",
     "The Piano Room is a grand room with a beautiful piano in the center. There's also a portrait with a giant map of the city of Burlington hanging on the wall. But you notice something is off about the piano. Maybe you should search it....",
     ["piano", "key"],
-    false
 );
 
 const computerroom = new Room(
     "computerroom",
     "The Computer Lab is filled with computer screens and desks. One of the screens displays a message",
     ["message", "riddle"],
-    true
 );
 
 const secretroom = new Room(
     "secretroom",
     "The Secret Room is small and dark, with a locked door on the opposite side. You must search the room for any items that might help you get out of here",
     ["flashlight", "chest"],
-    true
 );
 
-const roomMap = {
+const roomMap = { //Eli was kind enough to help with this during office hours on 04/20
     mainStreet,
     foyer,
     library,
@@ -113,7 +106,8 @@ const newspaper = new Item(
 
 const map = new Item(
     "map",
-    "A folded map showing a few areas a person can explore within the current building: a library, a piano room, and a computer room.\nTO enter a room, enter the word go and then if the room has two words (Ex. the piano room), use the two words together (Ex. pianoroom)",
+    "A folded map showing a few areas a person can explore within the current building: a library, a piano room, and a computer room.\nTo enter a room, enter the word go and then if the room has two words (Ex. the piano room), use the two words together (Ex. pianoroom)",
+    //set of instructions of how to appropriately enter a room
     true
 );
 
@@ -178,7 +172,7 @@ const wall = new Item(
     false
 );
 
-let itemLookup = {
+let itemLookup = { //starting on line 255, this helps with the "take" action and if something is takeable
     sign: sign,
     newspaper: newspaper,
     map: map,
@@ -194,13 +188,13 @@ let itemLookup = {
     wall: wall,
 };
 
-const code = "12345";
+const code = "12345"; //this is used at the start to help you enter the foyer
 
-const riddle = "the future";
+const riddle = "the future"; //this is for when you are in the computer room
 
-const password = "12468";
+const password = "12468"; //this will be used to unlock the door in the secret room
 
-let currentRoom = mainStreet;
+let currentRoom = mainStreet; //starting room
 
 let actions = {
     read: ["read", "inspect"],
@@ -221,11 +215,11 @@ start();
 async function start() {
     const welcomeMessage = `${currentRoom.description}\n>_ `;
     let answer = await ask(welcomeMessage);
-    while (answer !== "exit") {
+    while (answer !== "exit") { //true start of the code, where it is everythng but inputting exit in the await ask
         const input = answer.trim().toLowerCase().split(" ");
         const action = input[0];
         const noun = input[1];
-        if (actions.read.includes(action)) { 
+        if (actions.read.includes(action)) {  //"read" action
             if (noun === "sign") {
             console.log(sign.description);
         } else if (noun === "message") {
@@ -237,13 +231,13 @@ async function start() {
                 );
             }
         }
-        } else if (action === "open") {
+        } else if (action === "open") { //"open" action
             if (noun === "door") {
                 console.log("The door is locked. There is a keypad on the door handle.");
             } else if (noun === "chest") {
                 console.log(chest.description);
             }
-        } else if (action === "enter" && noun === "code") { //this is when you need to enter a code to get into the Foyer
+        } else if (action === "enter" && noun === "code") { //this is when you need to enter a code to get into the Foyer (normally i would have both enter's in one code block, but i wanted to add the extra await ask for this assignment)
             let guess = await ask("Enter the code: ");
             if (guess === code) {
                 console.log(
@@ -266,13 +260,13 @@ async function start() {
                     console.log(`You already have the ${item.name}.`);
                 } else {
                     inventory.push(item);
-                    console.log(`You picked up the ${item.name}.`);
+                    console.log(`You picked up the ${item.name}.`); //lets us know that an item has been added to our inventory
                     if (item.name === "newspaper") {
                         console.log(item.description);
                     } else if (item.name === "map") {
                         console.log(item.description);
                         console.log(
-                            "Which room would you like to go to? (HINT: use the word go to enter your chosen room)"
+                            "Which room would you like to go to?" 
                         );
                     } else if (item.name === "note") {
                         console.log(item.description);
@@ -288,7 +282,7 @@ async function start() {
                 }
             } else if (item && !item.takeable) { //if the item is not takeable
                 console.log(
-                    `That would be selfish. How will other students find their way?`
+                    `That would be selfish. How will other students find their way?` //"immovable objects" story
                 );
             } else {
                 console.log(`I don't see a ${noun} here.`);
@@ -302,7 +296,7 @@ async function start() {
             } else {
                 console.log(`You are not carrying a ${noun}.`);
             }
-        } else if (action === "i" || action === "inventory") {
+        } else if (action === "i" || action === "inventory") { //"inventory" story
             if (inventory.length === 0) {
                 console.log("You are not carrying anything.");
             } else {
@@ -312,8 +306,7 @@ async function start() {
                         .join(", ")}.`
                 );
             }
-        } else if (action === "go") {
-            //"go" is the action where you can enter a room, and I only want to use the "go" action if the player is in select rooms. 
+        } else if (action === "go") { //"go" is the action where you can enter a room, and I only want to use the "go" action if the player is in select rooms. 
             const room = rooms[currentRoom.name];
             const destinationRoom = noun;
             if (
@@ -341,9 +334,8 @@ async function start() {
                     console.log("You are already in the secret room.");
                     console.log(currentRoom.description);
                 } else if (
-                    noun === "secretroom" && currentRoom.name === "computerroom"
+                    noun === "secretroom" && currentRoom.name === "computerroom" //I set it so that the secretroom can only be accessed from the computer room
                 ) {
-                    //I set it so that the secretroom can only be accessed from the computer room
                     currentRoom = roomMap.secretroom;
                     console.log("You have entered the secret room.");
                     console.log(currentRoom.description);
@@ -366,7 +358,7 @@ async function start() {
         } else if (action === "insert") { //"insert" action
             if (noun === "key") {
             console.log("The drawer opens, revealing a piece of paper with text written on it.");
-            } else if (noun === "goldenkey") { //doing this ends the game as a winner
+            } else if (noun === "goldenkey") { //doing this ends the game
                 console.log("The door opens and you escapes just in time!\nYou turn around to see the building explode behind you, realizing that you narrowly avoided a deadly trap.\nVictorious, you walk away with the golden key in hand, having successfully completed your Zork adventure.");
                 process.exit();
             }
